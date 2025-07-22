@@ -1,0 +1,2 @@
+# company_inner_search_app
+社内情報特化型生成AIアプリ
