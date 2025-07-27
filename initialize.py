@@ -121,10 +121,10 @@ def initialize_retriever():
     # 埋め込みモデルの用意
     embeddings = OpenAIEmbeddings()
     
-    # チャンク分割用のオブジェクトを作成
+    # チャンク分割用のオブジェクトを作成　2025/07/27 問題2：マジックナンバー(チャンクサイズ、オーバーラップ数)を変数化
     text_splitter = CharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,
+        chunk_size=ct.CHUNK_SIZE,
+        chunk_overlap=ct.CHUNK_OVERLAP,
         separator="\n"
     )
 
@@ -134,8 +134,9 @@ def initialize_retriever():
     # ベクターストアの作成
     db = Chroma.from_documents(splitted_docs, embedding=embeddings)
 
-    # ベクターストアを検索するRetrieverの作成 2025/07/27 問題1：「k」の値を3から5に変更
-    st.session_state.retriever = db.as_retriever(search_kwargs={"k": 5})
+    # ベクターストアを検索するRetrieverの作成 2025/07/27 問題1：「k」の値を3から5に変更　
+    #　2025/07/27 問題2：関連ドキュメント数を変数化
+    st.session_state.retriever = db.as_retriever(search_kwargs={"k": ct.RETRIEVER_TOP_K})
 
 
 def initialize_session_state():
