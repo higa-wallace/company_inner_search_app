@@ -38,7 +38,7 @@ def display_app_title():
 
 def display_select_mode():
     """
-    回答モードのラジオボタンをサイドバーに表示
+    回答モードのラジオボタンをサイドバーに表示 2025/07/27課題3追記
     """
     st.session_state.mode = st.sidebar.radio(
         label="利用目的を選択してください",
@@ -57,7 +57,7 @@ def display_initial_ai_message():
 
 def display_sidebar_info():
     """
-    サイドバーに社内文書検索・社内問い合わせの説明を表示
+    サイドバーに社内文書検索・社内問い合わせの説明を表示 2025/07/27課題3追記
     """
     st.sidebar.markdown("### 機能説明")
     st.sidebar.markdown("**【社内文書検索】**")
