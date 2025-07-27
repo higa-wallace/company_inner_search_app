@@ -65,6 +65,10 @@ cn.display_select_mode()
 # AIメッセージの初期表示
 cn.display_initial_ai_message()
 
+# サイドバー表示
+cn.display_sidebar_info()
+cn.display_select_mode()
+
 
 ############################################################
 # 5. 会話ログの表示
