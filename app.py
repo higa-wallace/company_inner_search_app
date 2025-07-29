@@ -65,7 +65,7 @@ cn.display_select_mode()
 # AIメッセージの初期表示
 cn.display_initial_ai_message()
 
-# サイドバー表示 2025/07/27 課題3追記
+# サイドバー表示 2025/07/27 問題3追記
 cn.display_sidebar_info()
 
 
