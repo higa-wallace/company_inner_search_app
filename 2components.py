@@ -20,6 +20,22 @@ def display_app_title():
     """
     st.markdown(f"## {ct.APP_NAME}")
 
+
+#def display_select_mode():
+#    """
+#    回答モードのラジオボタンを表示
+#    """
+#    # 回答モードを選択する用のラジオボタンを表示
+#    col1, col2 = st.columns([100, 1])
+#    with col1:
+#        # 「label_visibility="collapsed"」とすることで、ラジオボタンを非表示にする
+#        st.session_state.mode = st.radio(
+#            label="",
+#            options=[ct.ANSWER_MODE_1, ct.ANSWER_MODE_2],
+#            label_visibility="collapsed"
+#       )
+
+
 def display_select_mode():
     """
     回答モードのラジオボタンをサイドバーに表示 2025/07/27問題3追記
@@ -30,14 +46,18 @@ def display_select_mode():
         index=0
     )
 
+
 def display_initial_ai_message():
     """
     AIメッセージの初期表示
     """
     with st.chat_message("assistant"):
         # 「st.success()」とすると緑枠で表示される
+        # st.markdown("こんにちは。私は社内文書の情報をもとに回答する生成AIチャットボットです。上記で利用目的を選択し、画面下部のチャット欄からメッセージを送信してください。")
         st.success("こんにちは。私は社内文書の情報をもとに回答する生成AIチャットボットです。上記で利用目的を選択し、画面下部のチャット欄からメッセージを送信してください。")
+        # 「st.warning()」とすると黄色枠で表示される 問題3
         st.warning(":warning: 具体的に入力した方が期待通りの解答を得やすいです。")
+
 
 def display_sidebar_info():
     """
@@ -50,6 +70,21 @@ def display_sidebar_info():
     st.sidebar.markdown("**【社内問い合わせ】**")
     st.sidebar.info("質問・要望に対して、社内文書の情報をもとに回答を得られます。")
     st.sidebar.code("【入力例】\n人事部に所属している従業員情報を一覧化して", wrap_lines=True, language=None)
+
+
+#        # 「社内文書検索」の機能説明
+#        st.markdown("**【「社内文書検索」を選択した場合】**")
+#        # 「st.info()」を使うと青枠で表示される
+#        st.info("入力内容と関連性が高い社内文書のありかを検索できます。")
+#        # 「st.code()」を使うとコードブロックの装飾で表示される
+#        # 「wrap_lines=True」で折り返し設定、「language=None」で非装飾とする
+#        st.code("【入力例】\n社員の育成方針に関するMTGの議事録", wrap_lines=True, language=None)
+
+#        # 「社内問い合わせ」の機能説明
+#        st.markdown("**【「社内問い合わせ」を選択した場合】**")
+#        st.info("質問・要望に対して、社内文書の情報をもとに回答を得られます。")
+#        st.code("【入力例】\n人事部に所属している従業員情報を一覧化して", wrap_lines=True, language=None)
+
 
 def display_conversation_log():
     """
@@ -157,6 +192,7 @@ def display_search_llm_response(llm_response):
         else:
             # 「メインドキュメントのファイルパス」を表示
             st.success(f"{main_file_path}", icon=icon)
+        
 
         # ==========================================
         # ユーザー入力値と関連性が高いサブドキュメントのありかを表示
@@ -169,6 +205,7 @@ def display_search_llm_response(llm_response):
         # ドキュメントが2件以上検索できた場合（サブドキュメントが存在する場合）のみ、サブドキュメントのありかを一覧表示
         # 「source_documents」内のリストの2番目以降をスライスで参照（2番目以降がなければfor文内の処理は実行されない）
         for document in llm_response["context"][1:]:
+            print(document.metadata["source"]) # デバッグ用
             # ドキュメントのファイルパスを取得
             sub_file_path = document.metadata["source"]
 
@@ -213,7 +250,7 @@ def display_search_llm_response(llm_response):
                 else:
                     # 「サブドキュメントのファイルパス」を表示
                     st.info(f"{sub_choice['source']}", icon=icon)
-        
+
         # 表示用の会話ログに格納するためのデータを用意
         # - 「mode」: モード（「社内文書検索」or「社内問い合わせ」）
         # - 「main_message」: メインドキュメントの補足メッセージ
@@ -278,9 +315,10 @@ def display_contact_llm_response(llm_response):
 
         # LLMが回答生成の参照元として使ったドキュメントの一覧が「context」内のリストの中に入っているため、ループ処理
         for document in llm_response["context"]:
-            # ファイルパスを取得
+            print(document.metadata["source"]) # デバッグ用
+            # ドキュメントのファイルパスを取得
             file_path = document.metadata["source"]
-            # ファイルパスの重複は除去
+            # ファイルパス＋ページ番号のタプルで重複除去
             if file_path in file_path_list:
                 continue
 
@@ -293,6 +331,17 @@ def display_contact_llm_response(llm_response):
             else:
                 # 「ファイルパス」のみ
                 file_info = f"{file_path}"
+
+            # 参照元のありかに応じて、適したアイコンを取得
+            icon = utils.get_source_icon(file_path)
+            # ファイル情報を表示
+            st.info(file_info, icon=icon)
+
+            # 重複チェック用に、ファイルパスをリストに順次追加
+            file_path_list.append(file_path)
+            # ファイル情報をリストに順次追加
+            file_info_list.append(file_info)
+
 
             # 参照元のありかに応じて、適したアイコンを取得
             icon = utils.get_source_icon(file_path)
